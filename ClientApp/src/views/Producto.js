@@ -3,8 +3,6 @@ import DataTable from 'react-data-table-component';
 import { Card, CardBody, CardHeader, Button, Modal, ModalHeader, ModalBody, Label, Input, FormGroup, ModalFooter, Row, Col } from "reactstrap"
 import Swal from 'sweetalert2'
 
-
-
 const modeloProducto = {
     idProducto :0,
     marca :"",
@@ -189,7 +187,7 @@ const Producto = () => {
         setVerModal(false);
     };
 
-    const guardarCambios = async () => {
+    const guardarCambios = async () => {                                            //Modificar existencias 
         if (producto.marca.trim() === "") {
             Swal.fire("Opp!", 'El campo "Producto" es obligatorio.', "warning");
             return;

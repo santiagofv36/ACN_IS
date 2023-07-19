@@ -34,7 +34,7 @@ const NavBar = () => {
                 <div className="sidebar-brand-text mx-3">Accesorios Náuticos</div>
             </Link>
 
-            {/* 
+            
             <hr className="sidebar-divider my-0" />
 
             {
@@ -45,9 +45,9 @@ const NavBar = () => {
                         <span>Dashboard</span>
                     </NavLink>
                 </li>
-            } */}
+            }
            
-            {/*
+           
             <hr className="sidebar-divider" />
             {
                 (dataUser.idRolNavigation.descripcion == "Administrador") &&
@@ -63,7 +63,7 @@ const NavBar = () => {
                         </div>
                     </div>
                 </li>
-            } */}
+            }
             
             {
                 (dataUser.idRolNavigation.descripcion == "Administrador") &&
@@ -100,7 +100,7 @@ const NavBar = () => {
             </li>
 
 
-            {/*         {(dataUser.idRolNavigation.descripcion == "Administrador") &&
+                     {(dataUser.idRolNavigation.descripcion == "Administrador") &&
                 <li className="nav-item">
                     <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReporte"
                         aria-expanded="true" aria-controls="collapseReporte">
@@ -114,9 +114,7 @@ const NavBar = () => {
                         </div>
                     </div>
                 </li>
-            } */}
-            
-
+            } 
 
             <hr className="sidebar-divider d-none d-md-block" />
 

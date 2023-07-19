@@ -19,6 +19,7 @@
     "react-router-dom": "^6.3.0",
     "react-scripts": "^4.0.3",
     "reactstrap": "^8.9.0",
+    "regex-email": "^1.0.2",
     "rimraf": "^2.6.2",
     "styled-components": "^5.3.5",
     "sweetalert2": "^11.4.19",

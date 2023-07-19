@@ -24,7 +24,7 @@ const Venta = () => {
     const [documentoCliente, setDocumentoCliente] = useState("")
     const [nombreCliente, setNombreCliente] = useState("")
 
-    const [tipoDocumento,setTipoDocumento] = useState("Credito")
+    const [tipoDocumento,setTipoDocumento] = useState("Debito")
     const [productos, setProductos] = useState([])
     const [total, setTotal] = useState(0)
     const [subTotal, setSubTotal] = useState(0)
@@ -37,7 +37,7 @@ const Venta = () => {
         setProductos([])
         setTotal(0)
         setSubTotal(0)
-        setIgv(0)
+        setIgv(0)   
     }
 
     //para obtener la lista de sugerencias
@@ -85,62 +85,73 @@ const Venta = () => {
     }
 
     const sugerenciaSeleccionada = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
-        Swal.fire({
-            title: suggestion.marca + " - " + suggestion.descripcion,
-            text: "Ingrese la cantidad",
-            input: 'text',
-            inputAttributes: {
-                autocapitalize: 'off'
-            },
-            showCancelButton: true,
-            confirmButtonText: 'Aceptar',
-            cancelButtonText: 'Volver',
-            showLoaderOnConfirm: true,
-            preConfirm: (inputValue) => {
-                if (inputValue <= 0) {
-                    setA_Busqueda("");
-                    Swal.showValidationMessage("La cantidad debe ser mayor que 0");
-                    return;
-                }
+        const isProductAlreadyAdded = productos.some((p) => p.idProducto === suggestion.idProducto);
 
-                if (isNaN(parseFloat(inputValue))) {
-                    setA_Busqueda("");
-                    Swal.showValidationMessage("Debe ingresar un valor numérico");
-                } else {
-                    let cantidad = parseInt(inputValue);
-                    if (cantidad <= 0) {
-                        setA_Busqueda("");
-                        Swal.showValidationMessage("La cantidad debe ser mayor que 0");
-                        return;
-                    }
+        if (isProductAlreadyAdded) {
+            Swal.fire("Opps!", "El producto ya ha sido agregado", "error");
+            return;
+        }
 
-                    let producto = {
-                        idProducto: suggestion.idProducto,
-                        descripcion: suggestion.descripcion,
-                        cantidad: cantidad,
-                        precio: suggestion.precio,
-                        total: suggestion.precio * parseFloat(inputValue)
-                    };
+      Swal.fire({
+        title: suggestion.marca + " - " + suggestion.descripcion,
+          text: "Ingrese la cantidad",
+          text: "La cantidad disponible de este producto es: " + suggestion.stock,
+        input: 'text',
+        inputAttributes: {
+          autocapitalize: 'off'
+        },
+        showCancelButton: true,
+        confirmButtonText: 'Aceptar',
+        cancelButtonText: 'Volver',
+        showLoaderOnConfirm: true,
+        preConfirm: (inputValue) => {
+          if (inputValue <= 0) {
+            setA_Busqueda("");
+            Swal.showValidationMessage("La cantidad debe ser mayor que 0");
+            return;
+          }
 
-                    let arrayProductos = [];
-                    arrayProductos.push(...productos);
-                    arrayProductos.push(producto);
-
-                    setProductos((anterior) => [...anterior, producto]);
-                    calcularTotal(arrayProductos);
-                }
-            },
-            allowOutsideClick: () => !Swal.isLoading()
-
-        }).then((result) => {
-            if (result.isConfirmed) {
-                setA_Busqueda("");
-            } else {
-                setA_Busqueda("");
+          if (isNaN(parseFloat(inputValue))) {
+            setA_Busqueda("");
+            Swal.showValidationMessage("Debe ingresar un valor numérico");
+          } else {
+            let cantidad = parseInt(inputValue);
+            if (cantidad <= 0) {
+              setA_Busqueda("");
+              Swal.showValidationMessage("La cantidad debe ser mayor que 0");
+              return;
             }
-        });
-    };
 
+            if (cantidad > suggestion.stock) {
+              setA_Busqueda("");
+              Swal.showValidationMessage("La cantidad ingresada supera el stock disponible");
+              return;
+            }
+
+              let producto = {
+                  idProducto: suggestion.idProducto,
+                  descripcion: suggestion.descripcion,
+                  cantidad: cantidad,
+                  precio: suggestion.precio,
+                  total: suggestion.precio * parseFloat(inputValue),
+                  stock: cantidad, // Modificar esta línea
+              };
+
+              let arrayProductos = [...productos, producto];
+              setProductos(arrayProductos);
+              calcularTotal(arrayProductos);
+          }
+        },
+        allowOutsideClick: () => !Swal.isLoading()
+
+      }).then((result) => {
+        if (result.isConfirmed) {
+          setA_Busqueda("");
+        } else {
+          setA_Busqueda("");
+        }
+      });
+    };
 
 
     const eliminarProducto = (id) => {
@@ -262,6 +273,7 @@ const Venta = () => {
             Swal.fire({
                 title: `${producto.descripcion}`,
                 text: "Ingrese la nueva cantidad",
+                text: "La cantidad disponible es: " + producto.cantidad,
                 input: "text",
                 inputAttributes: {
                     autocapitalize: "off",
@@ -277,9 +289,21 @@ const Venta = () => {
                         const nuevaCantidad = parseInt(inputValue);
                         if (nuevaCantidad <= 0) {
                             Swal.showValidationMessage("La cantidad debe ser mayor que cero");
+                        } else if (nuevaCantidad > producto.stock) {
+                            Swal.showValidationMessage("La cantidad ingresada supera el stock disponible");
                         } else {
                             const nuevoTotal = nuevaCantidad * producto.precio;
 
+                            const productoInventario = a_Productos.find((p) => p.idProducto === id);
+                            if (productoInventario) {
+                                // Calcular la diferencia de cantidad
+                                const diferenciaCantidad = nuevaCantidad - producto.cantidad;
+
+                                // Actualizar la cantidad en existencia del producto en el inventario
+                                productoInventario.stock -= diferenciaCantidad;
+                            }
+
+                            // Actualizar la cantidad y el total del producto en la lista de productos de la venta
                             const nuevosProductos = productos.map((p) => {
                                 if (p.idProducto === id) {
                                     return { ...p, cantidad: nuevaCantidad, total: nuevoTotal };

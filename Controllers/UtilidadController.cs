@@ -37,7 +37,7 @@ namespace ReactVentas.Controllers
 
                 config.ProductosVendidos = (from p in _context.Productos
                            join d in _context.DetalleVenta on p.IdProducto equals d.IdProducto
-                           group p by p.Descripcion into g
+                           group p by p.Marca into g
                            orderby g.Count() ascending
                            select new DtoProductoVendidos { Producto = g.Key, Total = g.Count().ToString()}).Take(4).ToList();
 

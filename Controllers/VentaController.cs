@@ -29,16 +29,17 @@ namespace ReactVentas.Controllers
             try
             {
                 lista = await _context.Productos
-                .Where(p => string.Concat(p.Codigo.ToLower(), p.Marca.ToLower(), p.Descripcion.ToLower()).Contains(busqueda.ToLower()))
-                .Select(p => new DtoProducto()
-                {
-                    IdProducto = p.IdProducto,
-                    Codigo = p.Codigo,
-                    Marca = p.Marca,
-                    Descripcion = p.Descripcion,
-                    Precio = p.Precio
-                }).ToListAsync();
-
+                    .Where(p => string.Concat(p.Codigo.ToLower(), p.Marca.ToLower(), p.Descripcion.ToLower()).Contains(busqueda.ToLower()))
+                    .Select(p => new DtoProducto()
+                    {
+                        IdProducto = p.IdProducto,
+                        Codigo = p.Codigo,
+                        Marca = p.Marca,
+                        Descripcion = p.Descripcion,
+                        Precio = p.Precio,
+                        Stock = p.Stock,
+                        Total = 0
+                    }).ToListAsync();
 
                 return StatusCode(StatusCodes.Status200OK, lista);
             }
@@ -47,6 +48,8 @@ namespace ReactVentas.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, lista);
             }
         }
+
+
 
         [HttpPost]
         [Route("Registrar")]
@@ -60,7 +63,7 @@ namespace ReactVentas.Controllers
                 {
                     productos.Add(new XElement("Item",
                         new XElement("IdProducto", item.IdProducto),
-                        new XElement("Cantidad", item.Cantidad),
+                        new XElement("Cantidad", item.Stock),
                         new XElement("Precio", item.Precio),
                         new XElement("Total", item.Total)
                         ));
