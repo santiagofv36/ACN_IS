@@ -1,0 +1,35 @@
+version: '3.4'
+
+networks:
+    reactVentasApp:
+
+services:
+    reactVentasDb:
+        container_name: react-ventas-db
+        image: mcr.microsoft.com/mssql/server:2019-latest
+        ports:
+            - 8002:1433
+        environment:
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=Passowrd@12345# 
+        networks:
+            - reactVentasApp
+        volumes:
+            - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+    reactVentas:
+        container_name: react-ventas-web
+        image: mcr.microsoft.com/dotnet/sdk:6.0
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - 8001:80
+        depends_on:
+            - reactVentasDb
+        networks:
+            - reactVentasApp
+        volumes:
+            - /clientApp/public/imagen/Foto003.JPG:/docker/images/Foto003.JPG
+
+
